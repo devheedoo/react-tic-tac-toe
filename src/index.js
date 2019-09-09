@@ -85,6 +85,7 @@ class Game extends React.Component {
 
   jumpTo(move) {
     this.setState({
+      history: this.state.history.slice(0, move + 1),
       stepNumber: move,
       xIsNext: (move % 2) === 0,
     })
@@ -107,7 +108,7 @@ class Game extends React.Component {
           >{desc}</button>
         </li>
       );
-    })
+    });
 
     let status;
     if (winner) {
