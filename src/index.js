@@ -61,6 +61,7 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
+      isMovesReversed: false,
     }
   }
 
@@ -91,24 +92,43 @@ class Game extends React.Component {
     })
   }
 
+  reverseMoves() {
+    this.setState({
+      isMovesReversed: !this.state.isMovesReversed,
+    });
+  }
+
   render() {
-    const { history, stepNumber, xIsNext } = this.state;
+    const { history, stepNumber, xIsNext, isMovesReversed } = this.state;
     const current = history[stepNumber];
     const winner = calculateWinner(current.squares);
 
-    const moves = history.map((step, move) => {
+    const movesArray = [];
+    history.map((step, move) => {
       const desc = move ?
         'Go to move #' + move + ' (' + (Math.floor(step.squareIndex / 3)) + ', ' + (step.squareIndex % 3) + ')' :
         'Go to game start';
-      return (
-        <li key={move}>
-          <button
-           style={{ fontWeight: stepNumber === move ? 'bold' : 'normal' }}
-           onClick={() => this.jumpTo(move)}
-          >{desc}</button>
-        </li>
-      );
+      if (!isMovesReversed) {
+        movesArray.push(
+          <li key={move}>
+            <button
+            style={{ fontWeight: stepNumber === move ? 'bold' : 'normal' }}
+            onClick={() => this.jumpTo(move)}
+            >{desc}</button>
+          </li>
+        );
+      } else {
+        movesArray.unshift(
+          <li key={move}>
+            <button
+            style={{ fontWeight: stepNumber === move ? 'bold' : 'normal' }}
+            onClick={() => this.jumpTo(move)}
+            >{desc}</button>
+          </li>
+        );
+      }
     });
+
 
     let status;
     if (winner) {
@@ -127,7 +147,8 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{moves}</ol>
+          <button onClick={() => this.reverseMoves()}>Reverse Moves</button>
+          <ol>{movesArray}</ol>
         </div>
       </div>
     );
